@@ -1,0 +1,24 @@
+{
+  "dependencies": {
+    "axios": "^0.26.0",
+    "lodash": "^4.17.21"
+  },
+  "name": "cashflowy",
+  "version": "1.0.0",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cashflowy/cashflowy-node.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cashflowy/cashflowy-node/issues"
+  },
+  "homepage": "https://github.com/cashflowy/cashflowy-node#readme",
+  "description": ""
+}
