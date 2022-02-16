@@ -17,13 +17,10 @@ class Cashflowy {
 		this.sort = 'createdAt DESC';
 	};
 	async find(options){
-		console.log('\n\n\n\n\n\n=================');
-		console.log('yo yo yo');
-
 		if(allowed_objects.indexOf(options.object)==-1)
 			throw new Error('invalid object');
-		var limit = _.get(options,'query.limit')||this.limit;
-		var page = _.get(options,'query.page')||this.page;
+		var limit = options.limit || this.limit;
+		var page = options.page || this.page;
 		if(_.get(options,'query.page'))
 			delete options.query.page;
 		var skip = (page-1)*limit;
@@ -31,7 +28,51 @@ class Cashflowy {
 			method: 'GET',
 			url: `${this.app_url}/apis/v1/${options.object}`,
 			params:{
-				populate:false,
+				populate:options.populate || false,
+				sort:options.sort || this.sort,
+				skip:skip,
+				limit:limit,
+				where: JSON.stringify(options.where),
+			},
+			headers: {
+				"api-key":this.api_key,
+				"api-secret":this.api_secret,
+			},
+			// data:options.update,
+		};
+		// _.merge(config.params,options.query);
+		var response = await axios(config);
+		return response.data;
+	};
+	async findOne(options){
+		var results = await this.find(options);
+		if(results.length==1)
+			return results[0];
+		else if(results.length>1)
+			throw new Error('more that one object found');
+		else if(results.length==0);
+			throw new Error('no object found');
+		
+	};
+	async create(options){
+
+	};
+	async updateOne(options){
+
+	};
+	async update(options){
+
+	};
+	async listObjectsToFetch(options){
+		var limit = _.get(options,'query.limit')||this.limit;
+		var page = _.get(options,'query.page')||this.page;
+		if(_.get(options,'query.page'))
+			delete options.query.page;
+		var skip = (page-1)*limit;
+		var config = {
+			method: 'GET',
+			url: `${this.app_url}/org/${options.cf_org}/integrations/${options.integration}/${options.third_party}/${options.tp_object}/fetch`,
+			params:{
 				sort:this.sort,
 				skip:skip,
 				limit:limit,
@@ -45,18 +86,51 @@ class Cashflowy {
 		_.merge(config.params,options.query);
 		var response = await axios(config);
 		return response.data;
+	}
+	async fetchOneObject(options){
+		var config = {
+			method: 'POST',
+			url: `${this.app_url}/org/${options.cf_org}/integrations/${options.integration}/${options.third_party}/${options.tp_object}/fetch_one`,
+			params:{},
+			headers: {
+				"api-key":this.api_key,
+				"api-secret":this.api_secret,
+			},
+			data:options.data,
+		};
+		var response = await axios(config);
+		return response.data;
 	};
-	async findOne(options){
-
+	async linkOneObject(options){
+		var config = {
+			method: 'POST',
+			url: `${this.app_url}/org/${options.cf_org}/integrations/${options.integration}/${options.third_party}/${options.tp_object}/link_one`,
+			params:{},
+			headers: {
+				"api-key":this.api_key,
+				"api-secret":this.api_secret,
+			},
+			data:options.data,
+		};
+		var response = await axios(config);
+		return response.data;
 	};
-	async create(options){
-
-	};
-	async updateOne(options){
-
-	};
-	async update(options){
-
+	async passthrough(options){
+		var config = {
+			method: options.method,
+			url: `${this.app_url}/org/${options.cf_org}/integrations/${options.integration}/passthrough`,
+			params:{
+				url:options.url,
+			},
+			headers: {
+				"api-key":this.api_key,
+				"api-secret":this.api_secret,
+			},
+			data:options.data,
+		};
+		_.merge(config.params,options.params);
+		var response = await axios(config);
+		return response.data;
 	};
 }
 

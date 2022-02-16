@@ -50,3 +50,41 @@ The following objects can be queried via blueprint APIs.
 
 ### Custom API endpoints
 These end points are shared with 
+
+#### listObjectsToFetch 
+list objects from 3rd party that can be added to cashflowy
+
+
+
+#### fetchOneObject
+create object in cashflowy from 3rd party
+
+#### linkOneObject
+link an object from 3rd party data with the item on cashflowy
+
+#### listObjectsToPush
+list objects in cashflowy that can be pushed to a 3rd party
+
+#### pushOneObject
+push one object from cashflowy to 3rd party. 
+
+#### refreshTPData
+refresh 3rd party data
+
+#### updateWithTPData
+update cashflowy data with 3rd party data. 
+
+
+
+
+'fetchObjects':['frontendAPI','populateIntegration'],
+	'fetchOneObject':['frontendAPI','populateIntegration'],
+	'linkOneObject':['frontendAPI','populateIntegration'],
+	'pushObjects':['frontendAPI','populateIntegration'],
+	'pushOneObject':['frontendAPI','populateIntegration'],
+	zohoCallback:true,
+},
+DataController:{
+	'*':['isAuthenticated','canAccessThisOrg'],
+	'fetchIntegrationDataAgain':['frontendAPI'],
+	'updateWithIntegrationData':['frontendAPI'],
