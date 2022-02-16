@@ -71,7 +71,7 @@ class Cashflowy {
 		var skip = (page-1)*limit;
 		var config = {
 			method: 'GET',
-			url: `${this.app_url}/org/${options.cf_org}/integrations/${options.integration}/${options.third_party}/${options.tp_object}/fetch`,
+			url: `${this.app_url}/org/${options.org}/integrations/${options.integration}/${options.integration_type}/${options.tp_type}/fetch`,
 			params:{
 				sort:this.sort,
 				skip:skip,
@@ -90,7 +90,7 @@ class Cashflowy {
 	async fetchOneObject(options){
 		var config = {
 			method: 'POST',
-			url: `${this.app_url}/org/${options.cf_org}/integrations/${options.integration}/${options.third_party}/${options.tp_object}/fetch_one`,
+			url: `${this.app_url}/org/${options.org}/integrations/${options.integration}/${options.third_party}/${options.tp_object}/fetch_one`,
 			params:{},
 			headers: {
 				"api-key":this.api_key,
@@ -104,7 +104,7 @@ class Cashflowy {
 	async linkOneObject(options){
 		var config = {
 			method: 'POST',
-			url: `${this.app_url}/org/${options.cf_org}/integrations/${options.integration}/${options.third_party}/${options.tp_object}/link_one`,
+			url: `${this.app_url}/org/${options.org}/integrations/${options.integration}/${options.integration_type}/${options.tp_type}/link_one`,
 			params:{},
 			headers: {
 				"api-key":this.api_key,
@@ -118,7 +118,7 @@ class Cashflowy {
 	async passthrough(options){
 		var config = {
 			method: options.method,
-			url: `${this.app_url}/org/${options.cf_org}/integrations/${options.integration}/passthrough`,
+			url: `${this.app_url}/org/${options.org}/integrations/${options.integration}/passthrough`,
 			params:{
 				url:options.url,
 			},
