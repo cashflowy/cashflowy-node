@@ -90,7 +90,7 @@ class Cashflowy {
 	async fetchOneObject(options){
 		var config = {
 			method: 'POST',
-			url: `${this.app_url}/org/${options.org}/integrations/${options.integration}/${options.third_party}/${options.tp_object}/fetch_one`,
+			url: `${this.app_url}/org/${options.org}/integrations/${options.integration}/${options.integration_type}/${options.tp_type}/fetch_one`,
 			params:{},
 			headers: {
 				"api-key":this.api_key,
