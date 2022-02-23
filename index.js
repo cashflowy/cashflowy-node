@@ -86,11 +86,49 @@ class Cashflowy {
 		_.merge(config.params,options.query);
 		var response = await axios(config);
 		return response.data;
-	}
+	};
+	async listObjectsToPush(options){
+		var limit = _.get(options,'query.limit')||this.limit;
+		var page = _.get(options,'query.page')||this.page;
+		if(_.get(options,'query.page'))
+			delete options.query.page;
+		var skip = (page-1)*limit;
+		var config = {
+			method: 'GET',
+			url: `${this.app_url}/org/${options.org}/integrations/${options.integration}/${options.integration_type}/${options.tp_type}/push`,
+			params:{
+				sort:this.sort,
+				skip:skip,
+				limit:limit,
+			},
+			headers: {
+				"api-key":this.api_key,
+				"api-secret":this.api_secret,
+			},
+			// data:options.update,
+		};
+		_.merge(config.params,options.query);
+		var response = await axios(config);
+		return response.data;
+	};
 	async fetchOneObject(options){
 		var config = {
 			method: 'POST',
 			url: `${this.app_url}/org/${options.org}/integrations/${options.integration}/${options.integration_type}/${options.tp_type}/fetch_one`,
+			params:{},
+			headers: {
+				"api-key":this.api_key,
+				"api-secret":this.api_secret,
+			},
+			data:options.data,
+		};
+		var response = await axios(config);
+		return response.data;
+	};
+	async pushOneObject(options){
+		var config = {
+			method: 'POST',
+			url: `${this.app_url}/org/${options.org}/integrations/${options.integration}/${options.integration_type}/${options.tp_type}/push_one`,
 			params:{},
 			headers: {
 				"api-key":this.api_key,
