@@ -68,13 +68,12 @@ class Cashflowy {
 		var page = _.get(options,'query.page')||this.page;
 		if(_.get(options,'query.page'))
 			delete options.query.page;
-		var skip = (page-1)*limit;
 		var config = {
 			method: 'GET',
 			url: `${this.app_url}/org/${options.org}/integrations/${options.integration}/${options.integration_type}/${options.tp_type}/fetch`,
 			params:{
 				sort:this.sort,
-				skip:skip,
+				page:page,
 				limit:limit,
 			},
 			headers: {
@@ -92,13 +91,12 @@ class Cashflowy {
 		var page = _.get(options,'query.page')||this.page;
 		if(_.get(options,'query.page'))
 			delete options.query.page;
-		var skip = (page-1)*limit;
 		var config = {
 			method: 'GET',
 			url: `${this.app_url}/org/${options.org}/integrations/${options.integration}/${options.integration_type}/${options.tp_type}/push`,
 			params:{
 				sort:this.sort,
-				skip:skip,
+				page:page,
 				limit:limit,
 			},
 			headers: {
