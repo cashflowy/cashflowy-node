@@ -70,6 +70,12 @@ push one object from cashflowy to 3rd party.
 
 #### refreshTPData
 refresh 3rd party data
+required fields
+- org
+- object_type
+- object_id
+- integration_type
+- integration
 
 #### updateWithTPData
 update cashflowy data with 3rd party data. 

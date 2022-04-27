@@ -168,6 +168,23 @@ class Cashflowy {
 		var response = await axios(config);
 		return response.data;
 	};
+	async refreshTPData(options){
+		var config = {
+			method: 'POST',
+			url: `${this.app_url}/org/${options.org}/data/${options.object_type}/${options.object_id}/${options.integration_type}:${options.integration}/fetch_again`,
+			// params:{
+			// 	url:options.url,
+			// },
+			headers: {
+				"api-key":this.api_key,
+				"api-secret":this.api_secret,
+			},
+			data:options.data,
+		};
+		_.merge(config.params,options.params);
+		var response = await axios(config);
+		return response.data;
+	};
 }
 
 module.exports = Cashflowy;
