@@ -100,21 +100,26 @@ The following objects can be queried via blueprint APIs.
     * Number (Eg. 1) - Which page to scan from the list with multiple pages of {limit} items
 
 
-#### Available actions
+#### Available functions
 
-* listObjectsToFetch(options) - List objects from third party that can be added(fetched) to Cashflowy
+* **cf.listObjectsToFetch(options)** 
+<br /> List objects from third party that can be added(fetched) to Cashflowy. <br /> The output will also tell you if the object from third party is already present in Cashflowy. <br /> `listObjectsToFetch` is a wrapper for `GET /org/:orgID/integrations/:integrationID/{integration_name}/{object}/fetch`.
 
-* fetchOneObject(options) - Create an object in Cashflowy based on an object from third party
+* **cf.fetchOneObject(options)**
+<br /> Create an object in Cashflowy based on an object's data from third party, and create the integration lookup for the object. The resulting object in Cashflowy will have the object's third party data as its data. The Cashflowy object will also contain a mapping to the original object in the third party app. <br />
+*Tip: A Cashflowy object can store integration data from multiple third party apps along with a mapping to the original objects in the third party apps.*
 
-* linkOneObject(options) - Link an object from third party data with the corresponding object in Cashflowy
+* **cf.linkOneObject(options)**
+<br /> Link an object from third party data with the corresponding object in Cashflowy. When intending to create objects in Cashflowy, sometimes a third party app object will already be existing in Cashflowy. In such a case, `fetchOneObject` will lead to duplication. You'll want to use `linkOneObject` instead. <br />
+This will do everything similar to `fetchOneObject` except that instead of creating a new object in Cashflowy, it will link the object's third-party data to an existing object in Cashflowy as integtration lookup data. <br />
 
-* listObjectsToPush(options) - List objects in Cashflowy that can be pushed to third party
+* **cf.listObjectsToPush(options)** - List objects in Cashflowy that can be pushed to third party
 
-* pushOneObject(options) - Push one object from Cashflowy to third party
+* **cf.pushOneObject(options)** - Push one object from Cashflowy to third party
 
-* refreshTPData(options) - Refresh the third party data of an object already in Cashflowy
+* **cf.refreshTPData(options)** - Refresh the third party data of an object already in Cashflowy
 
-* updateWithTPData(options) - Update Cashflowy data of a Cashflowy object with data from it's third party source. 
+* **cf.updateWithTPData(options)** - Update Cashflowy data of a Cashflowy object with data from it's third party source. 
 
 
 ---
