@@ -7,7 +7,8 @@ npm install cashflowy --save
 
 ## Documentation
 
-Cashflowy is build using Sailsjs. Sails has blueprint APIs. This is a wrapper that supports sails blueprint APIs. For those how are not familiar with Sailsjs, Sails supports REST/CRUD APIs out of the box. This is a wrapper for that. 
+Cashflowy is built using Sailsjs. Sails has Blueprint APIs. This is a wrapper that supports the Sails blueprint APIs. 
+For those who are not familiar with Sailsjs, Sails supports REST/CRUD APIs out of the box. This is a wrapper for that. 
 
 This wrapper supports CRUD: 
 - Create object
@@ -15,7 +16,9 @@ This wrapper supports CRUD:
 - Read object/objects
 - Delete object
 
-Cashflowy uses blueprint APIs and some custom APIs.  
+Cashflowy uses Blueprint APIs and some custom APIs.  
+
+---
 
 ### Initialisation
 ```javascript
@@ -25,8 +28,9 @@ var cf  = new Cashflowy({
 	api_secret:'some_api_secret',
 })
 ```
+---
 
-### Blue print APIs 
+### A. Blueprint APIs 
 
 #### Supported objects 
 
@@ -34,54 +38,91 @@ The following objects can be queried via blueprint APIs.
 - transactions
 - vendors
 - users
-- 
 
-#### Find
+#### Endpoints
+* find
+* findOne
+* create
+* update
+* updateOne
+* delete
 
-#### FindOne
+### B. Custom APIs
 
-#### Create
+#### Supported objects
+* transactions
+* vendors
+* purchase_order_requests
+* integration_lookups
 
-#### Update
+#### Required data/options
+* org:
+* integration:
+* integration_type:
+* tp_type:
+* sort:
+* limit:
+* page:
 
-#### UpdateOne
+**Options - in detail**
 
-#### Delete
-
-### Custom API endpoints
-These end points are shared with 
-
-#### listObjectsToFetch 
-list objects from 3rd party that can be added to cashflowy
-
-
-
-#### fetchOneObject
-create object in cashflowy from 3rd party
-
-#### linkOneObject
-link an object from 3rd party data with the item on cashflowy
-
-#### listObjectsToPush
-list objects in cashflowy that can be pushed to a 3rd party
-
-#### pushOneObject
-push one object from cashflowy to 3rd party. 
-
-#### refreshTPData
-refresh 3rd party data
-required fields
-- org
-- object_type
-- object_id
-- integration_type
-- integration
-
-#### updateWithTPData
-update cashflowy data with 3rd party data. 
-
+* org:
+  * Number
+  * Eg. 22 (Find an organization's ID from the URL once you are logged in to Cashflowy and viewing the organization's data. `app.cashflowy.io/org/{orgID}/`
+* integration: 
+  * Number
+  * Eg. 14 (Find an integration's ID from the URL when viewing the integration. `app.cashflowy.io/org/{orgID}/integrations/{integrationID}/`
+* integration_type:
+  * String. 
+  * Available integration types 
+    * cf_col (Cashflowy Collector App)
+    * cf_gst (Cashflowy GST App)
+    * cf_por (Cashflowy POR App) 
+    * quickbooks
+    * razorpayx
+    * zoho_books
+    * zoho_creator
+* tp_type:
+  * String
+  * Available third party object types
+    * transactions
+    * vendors 
+    * purchase_order_requests
+    * integration_lookups
+* Additional options
+  * sort:
+    * String 
+      * createdAt DESC
+      * createdAt ASC
+  * limit:
+    * Number (Eg. 100) - The number of objects to scan
+  * page:
+    * Number (Eg. 1) - Which page to scan from the list with multiple pages of {limit} items
 
 
+#### Available functions
+
+* **cf.listObjectsToFetch(options)** 
+<br /> List objects from third party that can be added(fetched) to Cashflowy. <br /> The output will also tell you if the object from third party is already present in Cashflowy. <br /> `listObjectsToFetch` is a wrapper for `GET /org/:orgID/integrations/:integrationID/{integration_name}/{object}/fetch`.
+
+* **cf.fetchOneObject(options)**
+<br /> Create an object in Cashflowy based on an object's data from third party, and create the integration lookup for the object. The resulting object in Cashflowy will have the object's third party data as its data. The Cashflowy object will also contain a mapping to the original object in the third party app. <br />
+*Tip: A Cashflowy object can store integration data from multiple third party apps along with a mapping to the original objects in the third party apps.*
+
+* **cf.linkOneObject(options)**
+<br /> Link an object from third party data with the corresponding object in Cashflowy. When intending to create objects in Cashflowy, sometimes a third party app object will already be existing in Cashflowy. In such a case, `fetchOneObject` will lead to duplication. You'll want to use `linkOneObject` instead. <br />
+This will do everything similar to `fetchOneObject` except that instead of creating a new object in Cashflowy, it will link the object's third-party data to an existing object in Cashflowy as integtration lookup data. <br />
+
+* **cf.listObjectsToPush(options)** - List objects in Cashflowy that can be pushed to third party
+
+* **cf.pushOneObject(options)** - Push one object from Cashflowy to third party
+
+* **cf.refreshTPData(options)** - Refresh the third party data of an object already in Cashflowy
+
+* **cf.updateWithTPData(options)** - Update Cashflowy data of a Cashflowy object with data from it's third party source. 
+
+
+---
 
 'fetchObjects':['frontendAPI','populateIntegration'],
 	'fetchOneObject':['frontendAPI','populateIntegration'],
