@@ -6,17 +6,94 @@ npm install cashflowy --save
 ```
 
 ## Documentation
+This library makes it simpler to use Cashflowy passthrough APIs.
+Advantages of using passthough
+- no overheads
+- no sharing of 3rd party api credentials
+- no messing with various 3rd party authentication protocols
+- automation code looks clean and precise with only business logic 
 
-Cashflowy is built using Sailsjs. Sails has Blueprint APIs. This is a wrapper that supports the Sails blueprint APIs. 
-For those who are not familiar with Sailsjs, Sails supports REST/CRUD APIs out of the box. This is a wrapper for that. 
+### Before
+``` js
+var env = require('./env/por_pipeline.env.js');
+async  function regeneratetoken(){
+	const regenerateurl = `https://accounts.zoho.in/oauth/v2/token?refresh_token=${env.zb.refresh_token}&client_id=${env.zb.client_id}&client_secret=${env.zb.client_secret}&redirect_uri=${env.zb.redirect_uri}&grant_type=refresh_token`;
+	var config ={
+		method:'post',
+		url:regenerateurl
+	}
+	return await axios(config);
+	 //JSON.parse(res.body).access_token;
+}
 
-This wrapper supports CRUD: 
-- Create object
-- Update object
-- Read object/objects
-- Delete object
+var getAccessToken = async function(){
+	const access_tokenreq =  await regeneratetoken();
+	const access_token = access_tokenreq.data.access_token;
+	return access_token;
+}
+var zoho_access_token = results.getAccessToken;
+var config = {
+	method:'post',
+	url:'https://books.zoho.in/api/v3/purchaseorders?organization_id=21341241234',
+	headers: {
+		'Authorization':'Zoho-oauthtoken '+zoho_access_token,
+	},
+	data:{
+		vendor_id:results.getZohoVendorLookup.tp_id,
+		purchaseorder_number:por.remote_id.trim(),
+		date:por.date.substr(0,10),
+		line_items:line_items,
+		custom_fields: [
+		  {
+		    "customfield_id": "579006000000022035",
+		    "value": por.remote_id,
+		  }
+		],
+	}
+}
+var res = await axios(config);
+return res.data.purchaseorder;
 
-Cashflowy uses Blueprint APIs and some custom APIs.  
+```
+
+### After
+
+``` js
+var cf = new Cashflowy(require(`../../env/cf_app.env.js`));
+var options = {
+	method:'POST',
+	url:'/purchaseorders', // organization_id=21341241234 also does not need to be mentioned. Cashflowy knows.
+	integration:9,
+	org:22,
+	data:{
+		vendor_id:results.getZohoVendorLookup.tp_id,
+		purchaseorder_number:por.remote_id.trim(),
+		date:por.date.substr(0,10),
+		line_items:line_items,
+		custom_fields: [
+		  {
+		    "customfield_id": "579006000000022035",
+		    "value": por.remote_id,
+		  }
+		],
+	}
+}
+var result = await cf.passthrough(options)
+return result.purchaseorder;
+
+```
+
+### Documentation of passthrough APIs
+https://docs.cashflowy.io/passthrough-api.html
+
+#### 3rd party Tools supported by Cashflowy passthrough
+- Google sheets - https://docs.cashflowy.io/passthrough-api/google-sheets/
+- Zoho books - https://docs.cashflowy.io/passthrough-api/zoho-books.html
+- Postgres - https://docs.cashflowy.io/passthrough-api/postgresql/
+- Stripe - https://docs.cashflowy.io/passthrough-api/stripe.html
+- Cashflowy POR app - https://docs.cashflowy.io/passthrough-api/por/
+- Quickbooks - 
+- 
 
 ---
 
@@ -29,109 +106,3 @@ var cf  = new Cashflowy({
 })
 ```
 ---
-
-### A. Blueprint APIs 
-
-#### Supported objects 
-
-The following objects can be queried via blueprint APIs. 
-- transactions
-- vendors
-- users
-
-#### Endpoints
-* find
-* findOne
-* create
-* update
-* updateOne
-* delete
-
-### B. Custom APIs
-
-#### Supported objects
-* transactions
-* vendors
-* purchase_order_requests
-* integration_lookups
-
-#### Required data/options
-* org:
-* integration:
-* integration_type:
-* tp_type:
-* sort:
-* limit:
-* page:
-
-**Options - in detail**
-
-* org:
-  * Number
-  * Eg. 22 (Find an organization's ID from the URL once you are logged in to Cashflowy and viewing the organization's data. `app.cashflowy.io/org/{orgID}/`
-* integration: 
-  * Number
-  * Eg. 14 (Find an integration's ID from the URL when viewing the integration. `app.cashflowy.io/org/{orgID}/integrations/{integrationID}/`
-* integration_type:
-  * String. 
-  * Available integration types 
-    * cf_col (Cashflowy Collector App)
-    * cf_gst (Cashflowy GST App)
-    * cf_por (Cashflowy POR App) 
-    * quickbooks
-    * razorpayx
-    * zoho_books
-    * zoho_creator
-* tp_type:
-  * String
-  * Available third party object types
-    * transactions
-    * vendors 
-    * purchase_order_requests
-    * integration_lookups
-* Additional options
-  * sort:
-    * String 
-      * createdAt DESC
-      * createdAt ASC
-  * limit:
-    * Number (Eg. 100) - The number of objects to scan
-  * page:
-    * Number (Eg. 1) - Which page to scan from the list with multiple pages of {limit} items
-
-
-#### Available functions
-
-* **cf.listObjectsToFetch(options)** 
-<br /> List objects from third party that can be added(fetched) to Cashflowy. <br /> The output will also tell you if the object from third party is already present in Cashflowy. <br /> `listObjectsToFetch` is a wrapper for `GET /org/:orgID/integrations/:integrationID/{integration_name}/{object}/fetch`.
-
-* **cf.fetchOneObject(options)**
-<br /> Create an object in Cashflowy based on an object's data from third party, and create the integration lookup for the object. The resulting object in Cashflowy will have the object's third party data as its data. The Cashflowy object will also contain a mapping to the original object in the third party app. <br />
-*Tip: A Cashflowy object can store integration data from multiple third party apps along with a mapping to the original objects in the third party apps.*
-
-* **cf.linkOneObject(options)**
-<br /> Link an object from third party data with the corresponding object in Cashflowy. When intending to create objects in Cashflowy, sometimes a third party app object will already be existing in Cashflowy. In such a case, `fetchOneObject` will lead to duplication. You'll want to use `linkOneObject` instead. <br />
-This will do everything similar to `fetchOneObject` except that instead of creating a new object in Cashflowy, it will link the object's third-party data to an existing object in Cashflowy as integtration lookup data. <br />
-
-* **cf.listObjectsToPush(options)** - List objects in Cashflowy that can be pushed to third party
-
-* **cf.pushOneObject(options)** - Push one object from Cashflowy to third party
-
-* **cf.refreshTPData(options)** - Refresh the third party data of an object already in Cashflowy
-
-* **cf.updateWithTPData(options)** - Update Cashflowy data of a Cashflowy object with data from it's third party source. 
-
-
----
-
-'fetchObjects':['frontendAPI','populateIntegration'],
-	'fetchOneObject':['frontendAPI','populateIntegration'],
-	'linkOneObject':['frontendAPI','populateIntegration'],
-	'pushObjects':['frontendAPI','populateIntegration'],
-	'pushOneObject':['frontendAPI','populateIntegration'],
-	zohoCallback:true,
-},
-DataController:{
-	'*':['isAuthenticated','canAccessThisOrg'],
-	'fetchIntegrationDataAgain':['frontendAPI'],
-	'updateWithIntegrationData':['frontendAPI'],
