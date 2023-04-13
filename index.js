@@ -16,6 +16,25 @@ class Cashflowy {
 		this.page = 1;
 		this.sort = 'createdAt DESC';
 	};
+	async passthrough(options){
+		var config = {
+			method: options.method,
+			url: `${this.app_url}/org/${options.org}/integrations/${options.integration}/passthrough`,
+			params:{
+				url:options.url,
+			},
+			headers: {
+				"api-key":this.api_key,
+				"api-secret":this.api_secret,
+			},
+			data:options.data,
+		};
+		_.merge(config.params,options.params);
+		var response = await axios(config);
+		return response.data;
+	};
+	
+	// ===DEPRECATED===
 	async find(options){
 		if(allowed_objects.indexOf(options.object)==-1)
 			throw new Error('invalid object');
@@ -44,6 +63,7 @@ class Cashflowy {
 		var response = await axios(config);
 		return response.data;
 	};
+	// ===DEPRECATED===
 	async findOne(options){
 		var results = await this.find(options);
 		if(results.length==1)
@@ -54,15 +74,7 @@ class Cashflowy {
 			throw new Error('no object found');
 		
 	};
-	async create(options){
-
-	};
-	async updateOne(options){
-
-	};
-	async update(options){
-
-	};
+	// ===DEPRECATED===
 	async listObjectsToFetch(options){
 		var limit = _.get(options,'query.limit')||this.limit;
 		var page = _.get(options,'query.page')||this.page;
@@ -86,6 +98,7 @@ class Cashflowy {
 		var response = await axios(config);
 		return response.data;
 	};
+	// ===DEPRECATED===
 	async listObjectsToPush(options){
 		var limit = _.get(options,'query.limit')||this.limit;
 		var page = _.get(options,'query.page')||this.page;
@@ -109,6 +122,7 @@ class Cashflowy {
 		var response = await axios(config);
 		return response.data;
 	};
+	// ===DEPRECATED===
 	async fetchOneObject(options){
 		var config = {
 			method: 'POST',
@@ -123,6 +137,7 @@ class Cashflowy {
 		var response = await axios(config);
 		return response.data;
 	};
+	// ===DEPRECATED===
 	async pushOneObject(options){
 		var config = {
 			method: 'POST',
@@ -137,6 +152,7 @@ class Cashflowy {
 		var response = await axios(config);
 		return response.data;
 	};
+	// ===DEPRECATED===
 	async linkOneObject(options){
 		var config = {
 			method: 'POST',
@@ -151,23 +167,7 @@ class Cashflowy {
 		var response = await axios(config);
 		return response.data;
 	};
-	async passthrough(options){
-		var config = {
-			method: options.method,
-			url: `${this.app_url}/org/${options.org}/integrations/${options.integration}/passthrough`,
-			params:{
-				url:options.url,
-			},
-			headers: {
-				"api-key":this.api_key,
-				"api-secret":this.api_secret,
-			},
-			data:options.data,
-		};
-		_.merge(config.params,options.params);
-		var response = await axios(config);
-		return response.data;
-	};
+	// ===DEPRECATED===
 	async refreshTPData(options){
 		var config = {
 			method: 'POST',
