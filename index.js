@@ -7,6 +7,28 @@ var allowed_objects = [
 	'purchase_order_requests',
 	'integration_lookups',
 ]
+var handleError = function(error){
+	if(error.isAxiosError){
+		var details = _.cloneDeep(error.response.data);
+		var details ={
+			status:error.response.status,
+			statusText:error.response.statusText,
+			config:{
+				method: error.response.config.method,
+				url: error.response.config.url,
+				params: error.response.config.params,
+				data: error.response.config.data
+			},
+			error:_.cloneDeep(error.response.data),
+		};
+		console.log('\n\n\n=========Cashflowy passthough error=======');
+		console.log(details);
+		throw new Error(error.response.data.error_message);
+	}
+	else
+		throw error;
+	
+}
 class Cashflowy {
 	constructor(options){
 		this.api_key = options.api_key || '';
@@ -30,7 +52,7 @@ class Cashflowy {
 			data:options.data,
 		};
 		_.merge(config.params,options.params);
-		var response = await axios(config);
+		var response = await axios(config).catch(handleError);
 		return response.data;
 	};
 	
