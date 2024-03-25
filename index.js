@@ -22,7 +22,7 @@ var handleError = function(error){
 			error:_.cloneDeep(error.response.data),
 		};
 		console.log('\n\n\n=========Cashflowy passthough error=======');
-		console.log(details);
+		console.log(JSON.stringify(details,2,2));
 		throw new Error(error.response.data.error_message);
 	}
 	else
